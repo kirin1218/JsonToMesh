@@ -262,16 +262,32 @@ public class MapInfoJson
 
 public class GameController : MonoBehaviour {
     [SerializeField]
-    private Material _material;
     //private Mesh _mesh;
     private List<Mesh> listMesh;
+    private List<int> listColor;
     private MapInfoJson mapinfo;
+
+    public GameObject stage;
+    public Material[] mateBuild;
 
     // Use this for initialization
     void Start () {
 #if  WRITE_MODE
         SaveToJson(MapInfoJson.FilePath, mapinfo);
 #endif
+        //  Stargeを敷き詰める
+        for (int i = 0; i < 100; i++)
+        {
+            for (int j = 0; j < 100; j++)
+            {
+                GameObject stargeObject = (GameObject)Instantiate(
+                    stage,
+                    new Vector3(i * 100, 0, j * 100),
+                    Quaternion.identity
+                    );
+            }
+        }
+
 #if false
         var data = new Data();
         var json = JsonUtility.ToJson(data, true); //整形する
@@ -294,7 +310,7 @@ public class GameController : MonoBehaviour {
         // 結果: {"meta":{"typeName":"player_param"},"data":{"name":"FighterA","hp":100,"attackPower":300}}
         Debug.Log(JsonUtility.ToJson(jsonData));
 #endif
-    }
+        }
 
 
 
@@ -303,6 +319,7 @@ public class GameController : MonoBehaviour {
     private void Awake()
     {
         listMesh = new List<Mesh>();
+        listColor = new List<int>();
 #if true
         mapinfo = LoadFromJson(MapInfoJson.FilePath);
 #else
@@ -348,6 +365,10 @@ public class GameController : MonoBehaviour {
             _mesh.RecalculateBounds();
 
             listMesh.Add(_mesh);
+
+            int iColor = UnityEngine.Random.Range(0, 3);
+            listColor.Add(iColor);
+
         }
     }
 
@@ -355,7 +376,7 @@ public class GameController : MonoBehaviour {
     void Update () {
         for (int i = 0; i < listMesh.Count(); i++)
         {
-            Graphics.DrawMesh(listMesh[i], Vector3.zero, Quaternion.identity, _material, 0);
+            Graphics.DrawMesh(listMesh[i], Vector3.zero, Quaternion.identity, mateBuild[listColor[i]], 0);
         }
     }
 
